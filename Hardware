@@ -1,0 +1,70 @@
+# POCKETCOMM: SYSTEM HARDWARE MANIFEST
+# Project: Disaster-Proof Messaging System
+# Version: 1.0 (Prototype Build)
+
+-------------------------------------------------------------------------
+1. CORE MICROCONTROLLER UNITS (MCU)
+-------------------------------------------------------------------------
+[Item]          ESP32-WROOM-32 Development Board
+[Quantity]      2 Units (1x Sender Node, 1x Receiver Gateway)
+[Specs]         Dual-core 240MHz, Integrated Wi-Fi/Bluetooth, 3.3V Logic
+[Role]          Main processing unit for radio logic and sensor fusion.
+
+-------------------------------------------------------------------------
+2. COMMUNICATION MODULES (RF LAYER)
+-------------------------------------------------------------------------
+[Item]          Ra-02 SX1278 LoRa Transceiver
+[Quantity]      2 Units
+[Specs]         Frequency: 433MHz | Sensitivity: -148dBm | Interface: SPI
+[Role]          Long-range, off-grid packet transmission (Mesh Link).
+
+[Item]          433MHz Helical Antenna
+[Quantity]      2 Units
+[Specs]         Gain: 2-3dBi | Impedance: 50 Ohm
+[Role]          Required for signal propagation >500m.
+
+-------------------------------------------------------------------------
+3. SENSORS & PERIPHERALS
+-------------------------------------------------------------------------
+[Item]          u-blox NEO-6M GPS Module
+[Quantity]      1 Unit (Sender Node only)
+[Specs]         Interface: UART (9600 Baud) | Ceramic Patch Antenna
+[Role]          Acquires atomic time and Lat/Lon coordinates for geolocation.
+
+[Item]          0.96" OLED Display Module
+[Quantity]      1 Unit (Sender Node)
+[Specs]         Driver: SSD1306 | Resolution: 128x64 | Interface: I2C
+[Role]          Heads-Up Display (HUD) for system status and message feedback.
+
+-------------------------------------------------------------------------
+4. POWER & CONNECTIVITY
+-------------------------------------------------------------------------
+[Item]          Breadboard (830 Tie-Points)
+[Quantity]      2 Units
+[Role]          Prototyping circuit base.
+
+[Item]          Jumper Wires (M-M, M-F, F-F)
+[Quantity]      1 Set (approx. 40 wires)
+[Role]          Inter-module connections.
+
+[Item]          Micro-USB Data Cables
+[Quantity]      2 Units
+[Role]          Power delivery and Serial data programming.
+
+[Item]          Capacitor (10uF - 100uF)
+[Quantity]      2 Units (Recommended)
+[Role]          Power smoothing for LoRa SX1278 VCC rail (prevents brownouts).
+
+-------------------------------------------------------------------------
+5. SOFTWARE ENVIRONMENT & LIBRARIES
+-------------------------------------------------------------------------
+[IDE]           Arduino IDE v2.3.0+
+[Libraries]     
+    - LoRa by Sandeep Mistry
+    - TinyGPS++ by Mikal Hart
+    - Adafruit GFX & SSD1306
+    - Firebase ESP Client by Mobizt
+    - BluetoothSerial (Native)
+
+[Backend]       Google Firebase Realtime Database (RTDB)
+[AI Engine]     Google Gemini API (via Cloud Functions/REST)
