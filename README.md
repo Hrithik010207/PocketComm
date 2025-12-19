@@ -1,7 +1,7 @@
 # PocketComm
 # ⚡ PocketComm
 
-**'Unbreakable Connection When Grids Fail**
+**Unbreakable Connection When Grids Fail**
 
 PocketComm is a **tactical, infrastructure-independent communication ecosystem** engineered for *last‑mile connectivity* during catastrophic network failures. By orchestrating a hybrid architecture of **Bluetooth, LoRa (Long Range RF), and cloud intelligence**, PocketComm transforms a simple smartphone into a **reliable emergency communication node** when cellular networks collapse.
 
