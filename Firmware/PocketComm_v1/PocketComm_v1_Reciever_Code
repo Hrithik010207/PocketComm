@@ -1,0 +1,128 @@
+/* * Project: PocketComm B (Receiver)
+ * Version 1: ESP32, LoRa, Li-ion battery, 433 MHz antenna
+ * Description: Receives LoRa data and formats it for the Terminal App.
+ */
+
+#include <SPI.h>              
+#include <LoRa.h>             
+#include "BluetoothSerial.h"  
+
+BluetoothSerial SerialBT;
+
+// --- PIN CONNECTIONS (Must be identical to Transmitter) ---
+#define LORA_SCK   18
+#define LORA_MISO  19
+#define LORA_MOSI  23
+#define LORA_CS    5
+#define LORA_RST   14
+#define LORA_DIO0  26
+
+#define LORA_BAND  433E6 
+
+// Global variable to track boot time for Uptime calculation
+unsigned long startMillis;
+
+void setup() {
+  Serial.begin(115200);
+
+  // Start Bluetooth
+  SerialBT.begin("PocketComm B");
+  
+  // --- INITIAL CONNECTION HANDSHAKE (Matches Image Output) ---
+  SerialBT.println("Connecting to PocketComm B ...");
+  delay(1000); // Small delay to simulate connection time
+  SerialBT.println("Connected");
+
+  // Setup LoRa hardware
+  SPI.begin(LORA_SCK, LORA_MISO, LORA_MOSI, LORA_CS);
+  LoRa.setPins(LORA_CS, LORA_RST, LORA_DIO0);
+
+  if (!LoRa.begin(LORA_BAND)) {
+    Serial.println("Error: Receiver LoRa failed!");
+    while (1); 
+  }
+
+  // Record the time when the receiver successfully started
+  startMillis = millis();
+  Serial.println("System: Receiver Ready and Listening...");
+}
+
+/* * Function: getUptime
+ * Logic: Calculates time elapsed since start and formats as HHh MMm SSs
+ */
+String getUptime() {
+  unsigned long seconds = (millis() - startMillis) / 1000;
+
+  int hours = seconds / 3600;
+  int minutes = (seconds % 3600) / 60;
+  int secs = seconds % 60;
+
+  char buffer[30];
+  // Uses sprintf to ensure 2-digit padding (e.g., 05 instead of 5)
+  sprintf(buffer, "%02dh %02dm %02ds", hours, minutes, secs);
+  return String(buffer);
+}
+
+void loop() {
+  // Check if a radio packet is detected in the air
+  int packetSize = LoRa.parsePacket();
+  
+  if (packetSize) {
+    String incoming = "";
+
+    // Read the incoming packet byte by byte
+    while (LoRa.available()) {
+      incoming += (char)LoRa.read();
+    }
+
+    // Capture signal quality metrics
+    int rssi = LoRa.packetRssi(); // Signal Strength (Lower is better, e.g., -70 is better than -90)
+    float snr = LoRa.packetSnr(); // Signal-to-Noise Ratio (Higher is better)
+
+    // --- EXACT SCREENSHOT FORMATTING FOR BLUETOOTH TERMINAL ---
+    SerialBT.println("────────────────────────────");
+    SerialBT.println("📥 RECEIVED");
+    SerialBT.println("From: PocketComm A");
+    SerialBT.print("At: Uptime ");
+    SerialBT.println(getUptime()); // Inserts the dynamic uptime string
+    SerialBT.println("----------------------------");
+    SerialBT.println("Message:");
+    SerialBT.println(incoming);    // The actual text from the transmitter
+    SerialBT.println("----------------------------");
+    SerialBT.print("Signal: ");
+    SerialBT.print(rssi);
+    SerialBT.print(" dB | ");
+    SerialBT.print(snr);
+    SerialBT.println(" dB");
+    SerialBT.println("────────────────────────────");
+
+    // Local debug print to Serial Monitor (USB)
+    Serial.println("Data Received: " + incoming);
+  }
+}
+
+/*
+ * =========================================================================
+ * SAMPLE OUTPUT FORMATS (EXPECTED RESULTS)
+ * =========================================================================
+ * * 1. SERIAL MONITOR (USB - Computer)
+ * ----------------------------------
+ * PocketComm B - Bluetooth Ready
+ * System: Receiver Ready and Listening...
+ * Data Received: SOS! Need Help Urgently.
+ * * * 2. SERIAL BLUETOOTH TERMINAL APP (Smartphone)
+ * --------------------------------------------
+ * Connecting to PocketComm B ...
+ * Connected
+ * * ────────────────────────────
+ * 📥 RECEIVED
+ * From: PocketComm A
+ * At: Uptime 00h 22m 38s
+ * ----------------------------
+ * Message:
+ * SOS! Need Help Urgently.
+ * ----------------------------
+ * Signal: -76 dB | 12.25 dB
+ * ────────────────────────────
+ * =========================================================================
+ */
