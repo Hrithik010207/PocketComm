@@ -1,0 +1,253 @@
+:root {
+    --bg-dark: #050505;
+    --panel-bg: rgba(20, 25, 35, 0.7);
+    --neon-blue: #00f3ff;
+    --neon-red: #ff2a2a;
+    --neon-green: #0aff0a;
+    --text-primary: #e0f7ff;
+    --text-dim: #5c7c8a;
+}
+
+body {
+    margin: 0;
+    padding: 20px;
+    background-color: var(--bg-dark);
+    color: var(--text-primary);
+    font-family: 'Rajdhani', sans-serif;
+    overflow-x: hidden;
+    background-image: 
+        linear-gradient(rgba(0, 243, 255, 0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0, 243, 255, 0.03) 1px, transparent 1px);
+    background-size: 30px 30px;
+    min-height: 100vh;
+}
+
+/* --- RADAR SCAN ANIMATION --- */
+body::before {
+    content: "";
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 5px;
+    background: linear-gradient(90deg, transparent, var(--neon-blue), transparent);
+    opacity: 0.2;
+    animation: scan 4s linear infinite;
+    pointer-events: none;
+    z-index: 0;
+}
+
+@keyframes scan {
+    0% { top: -10px; }
+    100% { top: 105vh; }
+}
+
+/* --- HEADER HUD --- */
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: var(--panel-bg);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(0, 243, 255, 0.2);
+    padding: 15px 30px;
+    border-radius: 4px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    position: relative;
+    z-index: 10;
+    margin-bottom: 30px;
+}
+
+h1 {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 1.8rem;
+    margin: 0;
+    letter-spacing: 3px;
+    text-shadow: 0 0 10px rgba(0, 243, 255, 0.6);
+    display: flex;
+    flex-direction: column;
+}
+
+h1 span {
+    font-size: 0.6rem;
+    color: var(--neon-blue);
+    font-family: 'Rajdhani', sans-serif;
+    letter-spacing: 6px;
+    margin-top: 5px;
+}
+
+.system-status {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 0.8rem;
+    border: 1px solid var(--neon-green);
+    padding: 8px 15px;
+    border-radius: 2px;
+    color: var(--neon-green);
+    background: rgba(10, 255, 10, 0.05);
+    box-shadow: 0 0 10px rgba(10, 255, 10, 0.1);
+}
+
+.blink-dot {
+    width: 8px; height: 8px;
+    background: var(--neon-green);
+    border-radius: 50%;
+    box-shadow: 0 0 10px var(--neon-green);
+    animation: pulse 1.5s infinite;
+}
+
+/* --- SECTIONS --- */
+.section-header {
+    font-family: 'Orbitron', sans-serif;
+    color: var(--text-dim);
+    border-bottom: 1px solid rgba(0, 243, 255, 0.2);
+    padding-bottom: 5px;
+    margin: 30px 0 15px 0;
+    letter-spacing: 2px;
+    font-size: 1rem;
+    display: flex;
+    justify-content: space-between;
+}
+
+/* --- MESSAGE GRIDS --- */
+.grid-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    gap: 25px;
+    position: relative;
+    z-index: 5;
+}
+
+/* --- CARD DESIGN --- */
+.card {
+    background: linear-gradient(135deg, rgba(20,25,35,0.9) 0%, rgba(10,12,18,0.95) 100%);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-left: 4px solid var(--neon-blue);
+    padding: 20px;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    clip-path: polygon(0 0, 100% 0, 100% 85%, 95% 100%, 0% 100%);
+    animation: cardEntry 0.4s ease-out backwards;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0, 243, 255, 0.15);
+    border-left-color: #fff;
+}
+
+/* Tech details on card corners */
+.card::before {
+    content: "GPS_FIX";
+    position: absolute;
+    top: 10px; right: 10px;
+    font-size: 0.5rem;
+    color: var(--text-dim);
+    letter-spacing: 1px;
+}
+
+.card-meta {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 12px;
+    font-size: 0.85rem;
+    color: var(--neon-blue);
+    font-family: 'Orbitron', sans-serif;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+    padding-bottom: 8px;
+}
+
+.message-text {
+    font-size: 1.4rem;
+    font-weight: 500;
+    line-height: 1.4;
+    color: #fff;
+    text-shadow: 0 0 5px rgba(255,255,255,0.2);
+    margin-bottom: 15px;
+}
+
+.priority-badge {
+    display: inline-block;
+    font-size: 0.7rem;
+    padding: 4px 8px;
+    background: rgba(0, 243, 255, 0.1);
+    border: 1px solid var(--neon-blue);
+    color: var(--neon-blue);
+    letter-spacing: 2px;
+}
+
+/* --- BUTTON FOR COMPLETION --- */
+.resolve-btn {
+    float: right;
+    background: transparent;
+    border: 1px solid var(--neon-green);
+    color: var(--neon-green);
+    font-family: 'Orbitron', sans-serif;
+    font-size: 0.7rem;
+    padding: 5px 10px;
+    cursor: pointer;
+    transition: 0.2s;
+    margin-top: -5px;
+}
+
+.resolve-btn:hover {
+    background: var(--neon-green);
+    color: #000;
+    box-shadow: 0 0 10px var(--neon-green);
+}
+
+/* --- COMPLETED STATE STYLE --- */
+.completed-card {
+    border-left: 4px solid var(--text-dim);
+    opacity: 0.7;
+}
+.completed-card .message-text {
+    color: var(--text-dim);
+    text-shadow: none;
+}
+.completed-card .priority-badge {
+    border-color: var(--text-dim);
+    color: var(--text-dim);
+    background: transparent;
+}
+
+/* --- CRITICAL MESSAGE STYLES --- */
+.critical {
+    border-left-color: var(--neon-red);
+    background: linear-gradient(135deg, rgba(50,10,10,0.9) 0%, rgba(20,5,5,0.95) 100%);
+    box-shadow: 0 0 20px rgba(255, 42, 42, 0.1);
+}
+
+.critical .message-text {
+    color: var(--neon-red);
+    font-weight: 700;
+    text-shadow: 0 0 8px rgba(255, 42, 42, 0.5);
+}
+
+.critical .card-meta { color: #ff6b6b; }
+
+.critical .priority-badge {
+    border-color: var(--neon-red);
+    color: var(--neon-red);
+    background: rgba(255, 42, 42, 0.1);
+    animation: flicker 2s infinite;
+}
+
+/* --- ANIMATIONS --- */
+@keyframes pulse {
+    0% { opacity: 0.4; }
+    50% { opacity: 1; }
+    100% { opacity: 0.4; }
+}
+
+@keyframes cardEntry {
+    from { opacity: 0; transform: perspective(1000px) rotateX(-10deg) translateY(20px); }
+    to { opacity: 1; transform: perspective(1000px) rotateX(0) translateY(0); }
+}
+
+@keyframes flicker {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.8; }
+    52% { opacity: 0.2; }
+    54% { opacity: 0.8; }
+}
