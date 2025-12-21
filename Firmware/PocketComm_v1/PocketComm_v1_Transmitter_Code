@@ -1,0 +1,67 @@
+/* * Project: PocketComm A (Transmitter)
+ * Version 1: ESP32, LoRa, Li-ion battery, 433 MHz antenna
+ * Description: Captures Bluetooth text and sends it via LoRa.
+ */
+
+#include <SPI.h>              // SPI library for communication with the LoRa module
+#include <LoRa.h>             // LoRa library for radio functions
+#include "BluetoothSerial.h"  // Bluetooth Classic library for ESP32
+
+// Initialize the Bluetooth Serial object
+BluetoothSerial SerialBT;
+
+// --- PIN CONNECTIONS ---
+#define LORA_SCK   18   // Clock
+#define LORA_MISO  19   // Master In Slave Out
+#define LORA_MOSI  23   // Master Out Slave In
+#define LORA_CS    5    // Chip Select (NSS)
+#define LORA_RST   14   // Reset
+#define LORA_DIO0  26   // Data Ready (Interrupt)
+
+// --- RADIO SETTINGS ---
+#define LORA_BAND  433E6 // Frequency must match your 433MHz Antenna
+
+void setup() {
+  // Start Hardware Serial for local debugging via USB
+  Serial.begin(115200);
+
+  // Start Bluetooth with the broadcast name "PocketComm A"
+  SerialBT.begin("PocketComm A");
+  Serial.println("System: Bluetooth 'PocketComm A' Started");
+
+  // Initialize the SPI bus with defined pins
+  SPI.begin(LORA_SCK, LORA_MISO, LORA_MOSI, LORA_CS);
+  
+  // Hand over the control pins to the LoRa library
+  LoRa.setPins(LORA_CS, LORA_RST, LORA_DIO0);
+
+  // Attempt to initialize the LoRa radio
+  Serial.println("System: Initializing LoRa...");
+  if (!LoRa.begin(LORA_BAND)) {
+    Serial.println("Error: LoRa Hardware Not Found!");
+    while (1); // Stop execution if hardware is missing
+  }
+
+  Serial.println("System: LoRa Initialized at 433 MHz");
+}
+
+void loop() {
+  // Check if there is a message arriving from the smartphone via Bluetooth
+  if (SerialBT.available()) {
+    // Read the string until the 'Enter' key is pressed on the phone
+    String msg = SerialBT.readStringUntil('\n');
+    msg.trim(); // Clean up the string (remove extra spaces/newlines)
+
+    // Ensure the message isn't empty before sending
+    if (msg.length() > 0) {
+      // Package the message for radio transmission
+      LoRa.beginPacket();
+      LoRa.print(msg);     // Load the text payload
+      LoRa.endPacket();    // Fire the radio burst
+
+      // Provide feedback on the Serial Monitor (USB)
+      Serial.print("Action: LoRa Broadcast -> ");
+      Serial.println(msg);
+    }
+  }
+}
